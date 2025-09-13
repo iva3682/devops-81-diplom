@@ -1,12 +1,12 @@
-#### Необходимые пакеты:
+### Необходимые пакеты:
 yc, kubectl, terraform, ansible
 
-#### Разворачиваем инфраструктуру:
+### Разворачиваем инфраструктуру:
 terraform init
 terraform plan -var-file="secret.tfvars"
 terraform apply -var-file="secret.tfvars"
 
-#### Что происходит:
+### Что происходит:
 terraform поднимает кластер k8s + ВМ для обслуживания приложения
 terraform запускает ansible playbook, который:
   - устанавливает Docker, Helm
