@@ -3,11 +3,14 @@ yc, kubectl, terraform, ansible
 
 ### Разворачиваем инфраструктуру:
 terraform init
+
 terraform plan -var-file="secret.tfvars"
+
 terraform apply -var-file="secret.tfvars"
 
 ### Что происходит:
 terraform поднимает кластер k8s + ВМ для обслуживания приложения
+
 terraform запускает ansible playbook, который:
   - устанавливает Docker, Helm
   - устанавливает OpenSearch + Dashboard
