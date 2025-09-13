@@ -1,0 +1,9 @@
+jenkins_java_args: "-server -Xmx2g -Xms512m"
+jenkins_jcasc_config_file: "{{ playbook_dir }}/jenkins/jenkins.yaml.j2"
+jenkins_pimt_args: "--latest false"
+jenkins_plugins_file: "{{ playbook_dir }}/jenkins/plugins.yaml"
+jenkins_version: "2.516.2"
+jenkins_java_package: "openjdk-21-jre-headless"
+jenkins_jobs:
+  - "test-app"
+jenkins_jobs_dir: "{{ playbook_dir }}/jenkins/jobs"

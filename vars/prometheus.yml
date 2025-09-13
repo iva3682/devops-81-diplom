@@ -1,0 +1,51 @@
+prometheus_targets:
+  node:
+    - targets:
+        - "{{ ansible_host }}:9100"
+prometheus_scrape_configs:
+  - job_name: "node"
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/node.yml"
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - "http://130.193.56.239/"
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115 # Blackbox exporter.
+prometheus_alert_rules:
+  - alert: Watchdog
+    expr: vector(1)
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      description:
+        'This is an alert meant to ensure that the entire alerting pipeline is functional.
+        This alert is always firing, therefore it should always be firing in Alertmanager
+        and always fire against a receiver. There are integrations with various notification
+        mechanisms that send a notification when this alert is not firing. For example the
+        "DeadMansSnitch" integration in PagerDuty.'
+      summary: "Ensure entire alerting pipeline is functional"
+  - alert: BlackboxProbeHttpFailure
+    expr: probe_http_status_code <= 199 OR probe_http_status_code >= 400
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: |
+        {% raw -%}
+        Blackbox probe HTTP failure (instance {{ $labels.instance }})
+        {% endraw -%}
+      description: |
+        {% raw -%}
+        HTTP status code is not 200-399\nVALUE = {{ $value }}\nLABELS = {{ $labels }}
+        {% endraw -%}

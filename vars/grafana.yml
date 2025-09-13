@@ -1,0 +1,26 @@
+grafana_apt_key: https://drive.usercontent.google.com/u/0/uc?id=1xd3ktsUXr2Jl-_0xYW3Vb0Qji0Ig05EV&export=download
+grafana_apt_repo: deb [arch={{ grafana_apt_arch }} signed-by=/usr/share/keyrings/grafana.asc] https://mirror.yandex.ru/mirrors/packages.grafana.com/oss/deb {{ grafana_apt_release_channel }} main
+
+grafana_ini:
+  security:
+    admin_user: admin
+    admin_password: "{{ grafana_password }}"
+grafana_datasources:
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    url: 'http://{{ ansible_host }}:9090'
+    isDefault: true
+  - name: "Alertmanager"
+    type: "alertmanager"
+    access: "proxy"
+    jsonData:
+      implementation: prometheus
+    url: "http://{{ ansible_host }}:9093"
+grafana_dashboards:
+  - dashboard_id: 13659
+    revision_id: 1
+    datasource: prometheus
+  - dashboard_id: 1860
+    revision_id: 41
+    datasource: prometheus

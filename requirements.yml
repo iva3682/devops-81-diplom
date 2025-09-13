@@ -1,0 +1,11 @@
+roles:
+  - src: ableton.jenkins_jcasc
+  - src: geerlingguy.docker
+  - src: gantsign.helm
+collections:
+  - name: opensearch.opensearch
+    type: git
+    source: git+https://github.com/4censord/opensearch-ansible-playbook
+  - name: ansible.posix
+  - name: prometheus.prometheus
+  - name: grafana.grafana

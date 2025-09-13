@@ -1,0 +1,54 @@
+---
+- name: Подготовка сервера
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - vars/tf_ansible.yml
+    - vars/jenkins.yml
+    - vars/docker.yml
+    - vars/opensearch.yml
+    - vars/prometheus.yml
+    - vars/grafana.yml
+    - vars/alertmanager.yml
+    - vars/node_exporter.yml
+    - vars/blackbox_exporter.yml
+
+  roles:
+    - opensearch.opensearch.linux.opensearch
+    - opensearch.opensearch.linux.dashboards
+    - gantsign.helm
+    - geerlingguy.docker
+    - ableton.jenkins_jcasc
+    - prometheus.prometheus.prometheus
+    - prometheus.prometheus.alertmanager
+    - prometheus.prometheus.node_exporter
+    - prometheus.prometheus.blackbox_exporter
+    - grafana.grafana.grafana
+
+  tasks:
+    - name: Install fluentd repo helm
+      become: false
+      ansible.builtin.command: helm repo add fluent https://fluent.github.io/helm-charts
+      register: stdout
+      changed_when: stdout.rc != 0
+
+    - name: Update repo helm
+      become: false
+      ansible.builtin.command: helm repo update
+      register: stdout
+      changed_when: stdout.rc != 0
+
+    - name: Send values.yaml
+      become: false
+      ansible.builtin.template:
+        src: "fluentd/values.yaml"
+        dest: /home/ansible/fluentd.yaml
+        mode: '0644'
+
+    - name: Install fluentd chart by helm
+      ansible.builtin.command: helm install fluentd fluent/fluentd --create-namespace -n fluentd --values fluentd.yaml
+      become: false
+      register: stdout
+      changed_when: stdout.rc != 0
